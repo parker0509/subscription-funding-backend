@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Product Detail</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h2 th:text="${project.name}"></h2>
+        </div>
+        <div class="card-body">
+
+            <!-- 이미지 설명 및 이미지 사진 출력 -->
+            <img th:src="@{${project.imageUrl}}" alt="Product Image" class="img-fluid"/>
+
+            <p th:text="${project.description}"></p>
+            <p><strong>Price:</strong> <span th:text="${project.price}"></span></p>
+            <p><strong>Stock:</strong> <span th:text="${project.stockQuantity}"></span></p>
+        </div>
+        <div class="card-footer">
+            <a href="/order" class="btn btn-primary">바로 구매</a>
+            <form th:action="@{/cart/add/{id}(id=${project.id})}" method="POST">
+                <input type="number" name="quantity" value="1" min="1" />
+                <button type="submit" class="btn btn-primary">장바구니에 추가</button>
+            </form>
+            <a href="/projects" class="btn btn-primary">Back</a>
+        </div>
+
+        <!-- 장바구니 추가 버튼 -->
+        <div class="cart-project">
+            <a href="/cart" class="btn btn-primary" onclick="submitCartForm()">장바구니 보기</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function submitCartForm() {
+        // 폼 제출
+        document.getElementById("cartForm").submit();
+    }
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

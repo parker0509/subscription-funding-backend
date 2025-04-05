@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>장바구니</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<h1>장바구니</h1>
+
+<!-- 장바구니 내용 출력 테이블 -->
+<table id="cart-table">
+    <thead>
+    <tr>
+        <th>상품명</th>
+        <th>가격</th>
+        <th>수량</th>
+        <th>합계</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${cart.items}">
+        <td th:text="${item.project.name}">상품명</td>
+        <td th:text="${item.project.price}">가격</td>
+        <td th:text="${item.quantity}">수량</td>
+        <td th:text="${item.getTotalPrice()}">합계</td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- 장바구니 총 금액 -->
+<div>
+    <strong>장바구니 총 금액: </strong>
+    <span th:text="${formattedTotalPrice}"></span>원
+</div>
+
+<!-- 장바구니 비우기 버튼 -->
+<form action="/cart/removeAll" method="POST">
+    <button type="submit">장바구니 비우기</button>
+</form>
+
+<!-- 결제하기 버튼 -->
+<button onclick="window.location.href='/order'">주문하기</button>
+
+<a href="/cart?cartId=1">View Cart</a>
+
+</body>
+</html>

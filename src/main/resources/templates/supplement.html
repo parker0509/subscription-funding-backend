@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuppleMatch</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <title>영양제 영양소 계산기</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+                    font-family: 'Roboto', sans-serif;
+                    background-color: #f8f9fa;
+                    color: #333;
+                }
+
+                .navbar {
+                        background-color: #ffffff !important;  /* 네비게이션 바 배경색을 하얀색으로 설정 */
+                        border-bottom: 2px solid #ddd;  /* 경계선 추가 */
+                        }
+                .navbar-brand {
+                    color: #000 !important; /* 검정색으로 설정 */
+                    font-family: 'Montserrat', sans-serif;
+                    font-size: 1.5rem;
+                    font-weight: 600;
+                    margin-left: 112px; /* 왼쪽 공간 */
+                    margin-right: 100px; /* 오른쪽에 여백 추가 */
+                }
+                .navbar-nav {
+                    display: flex;
+    justify-content: flex-start;  /* 왼쪽 정렬 */
+                    gap: 00px;  /* 아이템 사이 간격 */
+                    white-space: nowrap;
+
+                }
+
+                .nav-item {
+                    padding: 0 8px;  /* 항목 간 여백 추가 */
+
+                }
+                .navbar-nav .nav-link {
+                    color: #333; /* 원하는 글씨 색 (예: 검정색) */
+                    font-weight: 500;
+                    font-size: 1.0rem;
+                    transition: color 0.3s ease;
+                }
+
+                .navbar-nav .nav-link:hover {
+                    color: #555; /* 호버 시 색상 변경 */
+                }
+
+                                .container {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    background-color: #ffffff;
+                                    border-radius: 10px;
+                                    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+                                    padding: 30px;
+                                    max-width: 1200px;
+                                    margin: 0 auto;
+                                    margin-top: 20px;
+                                }
+
+                                .input-group {
+                                    margin-bottom: 20px;
+                                }
+                                .input-group-text {
+                                    background-color: #4e73df;
+                                    color: white;
+                                }
+                                .btn-primary {
+                                    width: 100%;
+                                    background-color: #4e73df;
+                                    border: none;
+                                    padding: 10px;
+                                }
+                                .btn-primary:hover {
+                                    background-color: #2e59d9;
+                                }
+                                .result-item {
+                                    font-size: 1.2rem;
+                                    margin-bottom: 20px;
+                                    padding: 10px;
+                                    border-radius: 5px;
+                                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                                }
+                                .deficient {
+                                    color: red;
+                                    font-weight: bold;
+                                    background-color: rgba(255, 99, 132, 0.1);
+                                }
+                                .moderate {
+                                    color: orange;
+                                    font-weight: bold;
+                                    background-color: rgba(255, 159, 64, 0.1);
+                                }
+                                .sufficient {
+                                    color: green;
+                                    font-weight: bold;
+                                    background-color: rgba(75, 192, 192, 0.1);
+                                }
+                                .result-item strong {
+                                    color: #333;
+                                }
+                                .chart-container {
+                                    margin-top: 30px;
+                                    position: relative;
+                                }
+                                .chart-container canvas {
+                                    border-radius: 10px;
+                                }
+                                .right-column {
+                                    width: 50%;
+                                    padding-left: 40px;
+                                }
+                                .left-column {
+                                    width: 35%;
+                                }
+                                .deficient-list {
+                                    max-width: 500px;
+                                    padding: 15px;
+                                    border-radius: 5px;
+                                    background-color: #f9f9f9;
+                                    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+                                    overflow-y: auto;
+                                }
+    </style>
+
+
+</head>
+<body>
+
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="/">Taily</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="true" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="/bugs-improvement">버그 및 개선사항</a></li>
+                <li class="nav-item"><a class="nav-link" href="/api/projects/list">비타민/건강보조식품</a></li>
+                <li class="nav-item"><a class="nav-link" href="/register">회원가입</a></li>
+                <li class="nav-item"><a class="nav-link" href="/login">로그인</a></li>
+            </ul>
+        </div>
+</nav>
+
+
+
+<div class="container">
+    <div class="left-column">
+        <h1>영양제 영양소 계산기</h1>
+        <p class="text-center mb-4">영양제를 입력하여 필요한 영양소를 계산해보세요.</p>
+        <p class="text-center mb-7">⚡ 비타민의 모든 상태를 확인하고 싶다면 0을 입력해야합니다. ⚡</p>
+        <form id="vitaminForm">
+            <!-- 비타민 입력란 추가 -->
+            <div class="input-group">
+                <label for="vitaminA" class="input-group-text">비타민 A (μg)</label>
+                <input type="number" class="form-control" id="vitaminA" placeholder="비타민 A 섭취량을 입력하세요">
+            </div>
+            <div class="input-group">
+                <label for="vitaminB1" class="input-group-text">비타민 B1 (mg)</label>
+                <input type="number" class="form-control" id="vitaminB1" placeholder="비타민 B1 섭취량을 입력하세요">
+            </div>
+            <div class="input-group">
+                <label for="vitaminB2" class="input-group-text">비타민 B2 (mg)</label>
+                <input type="number" class="form-control" id="vitaminB2" placeholder="비타민 B2 섭취량을 입력하세요">
+            </div>
+            <div class="input-group">
+                <label for="vitaminB3" class="input-group-text">비타민 B3 (mg)</label>
+                <input type="number" class="form-control" id="vitaminB3" placeholder="비타민 B3 섭취량을 입력하세요">
+            </div>
+            <div class="input-group">
+                <label for="vitaminB5" class="input-group-text">비타민 B5 (mg)</label>
+                <input type="number" class="form-control" id="vitaminB5" placeholder="비타민 B5 섭취량을 입력하세요">
+            </div>
+            <div class="input-group">
+                <label for="vitaminB6" class="input-group-text">비타민 B6 (mg)</label>
+                <input type="number" class="form-control" id="vitaminB6" placeholder="비타민 B6 섭취량을 입력하세요">
+            </div>
+            <div class="input-group">
+                <label for="vitaminB7" class="input-group-text">비타민 B7 (μg)</label>
+                <input type="number" class="form-control" id="vitaminB7" placeholder="비타민 B7 섭취량을 입력하세요">
+            </div>
+            <div class="input-group">
+                <label for="vitaminB9" class="input-group-text">비타민 B9 (μg)</label>
+                <input type="number" class="form-control" id="vitaminB9" placeholder="비타민 B9 섭취량을 입력하세요">
+            </div>
+            <div class="input-group">
+                <label for="vitaminB12" class="input-group-text">비타민 B12 (μg)</label>
+                <input type="number" class="form-control" id="vitaminB12" placeholder="비타민 B12 섭취량을 입력하세요">
+            </div>
+            <div class="input-group">
+                <label for="vitaminC" class="input-group-text">비타민 C (mg)</label>
+                <input type="number" class="form-control" id="vitaminC" placeholder="비타민 C 섭취량을 입력하세요">
+            </div>
+            <div class="input-group">
+                <label for="vitaminD" class="input-group-text">비타민 D (μg)</label>
+                <input type="number" class="form-control" id="vitaminD" placeholder="비타민 D 섭취량을 입력하세요">
+            </div>
+            <div class="input-group">
+                <label for="vitaminE" class="input-group-text">비타민 E (mg)</label>
+                <input type="number" class="form-control" id="vitaminE" placeholder="비타민 E 섭취량을 입력하세요">
+            </div>
+            <div class="input-group">
+                <label for="vitaminK" class="input-group-text">비타민 K (μg)</label>
+                <input type="number" class="form-control" id="vitaminK" placeholder="비타민 K 섭취량을 입력하세요">
+            </div>
+            <button type="button" class="btn btn-primary" onclick="calculateNutrition()">결과 보기</button>
+        </form>
+
+
+    </div>
+
+    <div class="right-column">
+        <h3>비타민 상태</h3>
+        <div class="deficient-list" id="deficientList"></div>
+
+        <div class="chart-container">
+            <canvas id="vitaminChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+
+</div>
+
+<script>
+    const RDA = {
+        "vitaminA": [700, 900],
+        "vitaminB1": [1.1, 1.2],
+        "vitaminB2": [1.1, 1.3],
+        "vitaminB3": [14, 16],
+        "vitaminB5": [5, 5],
+        "vitaminB6": [1.3, 2.0],
+        "vitaminB7": [30, 30],
+        "vitaminB9": [400, 400],
+        "vitaminB12": [2.4, 2.4],
+        "vitaminC": [90, 90],
+        "vitaminD": [10, 20],
+        "vitaminE": [15, 15],
+        "vitaminK": [90, 120],
+    };
+
+    function calculateNutrition() {
+        const deficientListDiv = document.getElementById('deficientList');
+        const form = document.getElementById('vitaminForm');
+        let vitamins = {};
+        let graphData = [];
+        let labels = [];
+        let allVitamins = [];
+
+        // Get input values
+        for (let key in RDA) {
+            const inputValue = document.getElementById(key).value;
+            if (inputValue !== "") {
+                vitamins[key] = parseFloat(inputValue);
+            }
+        }
+
+        // Calculate deficiencies and percentages
+        let deficiencies = {};
+for (let key in RDA) {
+    if (vitamins[key] !== undefined) {
+        const [minRDA, maxRDA] = RDA[key];
+        const percentage = (vitamins[key] / maxRDA) * 100;
+        const deficitAmount = maxRDA - vitamins[key]; // 부족한 양 계산
+
+        deficiencies[key] = {
+            value: vitamins[key],
+            percentage: percentage,
+            status: getStatus(percentage),
+            deficit: deficitAmount > 0 ? deficitAmount.toFixed(1) : "충분" // 부족한 양 표시
+        };
+
+        // 단위 설정
+        const unit = (key === 'vitaminB7' || key === 'vitaminB9' || key === 'vitaminB12' || key === 'vitaminK') ? 'μg' : 'mg';
+
+        allVitamins.push(
+            `<div class="${deficiencies[key].status}">
+                <strong>${key}</strong>: 섭취량 ${deficiencies[key].value}${unit}
+                (부족률: ${percentage.toFixed(1)}%)
+                ${deficiencies[key].deficit !== "충분" ? ` | 부족한 양: ${deficiencies[key].deficit}${unit}` : " | ✅ 충분"}
+            </div>`
+        );
+
+        graphData.push(percentage);
+        labels.push(key);
+    }
+}
+
+
+        // Update vitamin list
+        deficientListDiv.innerHTML = allVitamins.join('');
+
+        // Create the chart
+        createChart(labels, graphData);
+    }
+
+    // Get status based on percentage
+    function getStatus(percentage) {
+        if (percentage < 50) {
+            return 'deficient';  // 빨강
+        } else if (percentage < 80) {
+            return 'moderate';  // 노랑
+        } else {
+            return 'sufficient';  // 초록
+        }
+    }
+
+    // Create the chart
+    function createChart(labels, data) {
+        const ctx = document.getElementById('vitaminChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '영양제 섭취 비율 (%)',
+                    data: data,
+                    backgroundColor: data.map(percentage => {
+                        return percentage < 50 ? 'red' : (percentage < 80 ? 'orange' : 'green');
+                    }),
+                    borderColor: 'black',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                    },
+                },
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.raw.toFixed(1) + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

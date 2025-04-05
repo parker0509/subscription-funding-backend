@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${project.id == null ? 'Create New Product' : 'Edit Product'}"></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h2 th:text="${project.id == null ? 'Create New Product' : 'Edit Product'}"></h2>
+        </div>
+        <div class="card-body">
+            <!-- 상품 등록/수정 폼 -->
+            <form id="productForm">
+                <!-- Hidden input으로 ID 저장 (수정 시 사용) -->
+                <input type="hidden" id="productId" th:value="${project.id}">
+
+                <!-- 상품명 입력 -->
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" class="form-control" placeholder="Enter project name" th:value="${project.name}" required />
+                </div>
+
+                <!-- 상품 설명 입력 -->
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" class="form-control" placeholder="Enter project description" required>[[${project.description}]]</textarea>
+                </div>
+
+                <!-- 상품 가격 입력 -->
+                <div class="form-group">
+                    <label for="price">Price:</label>
+                    <input type="number" id="price" class="form-control" placeholder="Enter project price" th:value="${project.price}" required />
+                </div>
+
+                <!-- 상품 재고 수량 입력 -->
+                <div class="form-group">
+                    <label for="stockQuantity">Stock Quantity:</label>
+                    <input type="number" id="stockQuantity" class="form-control" placeholder="Enter stock quantity" th:value="${project.stockQuantity}" required />
+                </div>
+
+                <!-- 이미지 URL 입력 -->
+                <div class="form-group">
+                    <label for="imageUrl">Image URL:</label>
+                    <input type="text" id="imageUrl" class="form-control" placeholder="Enter project image URL" th:value="${project.imageUrl}" />
+                </div>
+
+                <!-- 제출 버튼 -->
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <div class="card-footer">
+            <a href="/api/projects" class="btn btn-secondary">Back to Product List</a>
+        </div>
+    </div>
+</div>
+
+<!-- 필요한 스크립트 추가 (부트스트랩과 JQuery) -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    document.getElementById("productForm").addEventListener("submit", function(event) {
+        event.preventDefault();  // 기본 폼 제출 방지
+
+        // 입력된 값 가져오기
+        const project = {
+            name: document.getElementById("name").value,
+            description: document.getElementById("description").value,
+            price: parseFloat(document.getElementById("price").value),
+            stockQuantity: parseInt(document.getElementById("stockQuantity").value),
+            imageUrl: document.getElementById("imageUrl").value
+        };
+
+        const productId = document.getElementById("productId").value;
+        const url = productId ? `/api/projects/${productId}` : "/api/projects";
+        const method = productId ? "PUT" : "POST";
+
+        // REST API 호출
+        fetch(url, {
+            method: method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(project)
+        })
+        .then(response => {
+            if (response.ok) {
+                alert("상품이 성공적으로 저장되었습니다.");
+                window.location.href = "/projects";  // 등록 후 목록 페이지로 이동
+            } else {
+                return response.json().then(err => {
+                    alert("오류 발생: " + (err.message || response.status));
+                });
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("네트워크 오류가 발생했습니다.");
+        });
+    });
+</script>
+
+</body>
+</html>
