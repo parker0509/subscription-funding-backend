@@ -1,15 +1,18 @@
 package mall.shopping.mall.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mall.shopping.mall.dto.ProjectRequestDto;
+import mall.shopping.mall.dto.ProjectResponseDto;
 import mall.shopping.mall.entity.Project;
 import mall.shopping.mall.service.project.ProjectService;
+import mall.shopping.mall.util.CustomUserDetails;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/projects")
@@ -20,8 +23,8 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping
-    public ResponseEntity<List<Project>> getAllProjects() {
-        return ResponseEntity.ok(projectService.getAllProjects());
+    public List<ProjectResponseDto> getAllProjects() {
+        return projectService.getAllProjects();
     }
 
     @GetMapping("/{id}")
@@ -31,9 +34,10 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity<Project> createProject(@RequestBody @Valid ProjectRequestDto projectDto) {
-        Project project = projectService.createProject(projectDto);
-        return ResponseEntity.ok(project);
+    public ResponseEntity<Project> createProject(@RequestBody ProjectRequestDto dto,
+                                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Project savedProject = projectService.createProject(dto, userDetails.getUsername());
+        return ResponseEntity.ok(savedProject);
     }
 
     @PutMapping("/{id}")

@@ -22,6 +22,4 @@ public class ProjectRequestDto {
 
     private String imageUrl; // 이미지 URL은 선택 사항
 
-    @NotNull(message = "프로젝트 생성자는 필수입니다.")
-    private User creatorId; // 유저 ID 추가
 }

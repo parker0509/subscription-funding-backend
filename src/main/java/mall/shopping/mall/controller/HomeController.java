@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
+import mall.shopping.mall.dto.ProjectResponseDto;
 import mall.shopping.mall.entity.Project;
 import mall.shopping.mall.entity.User;
 import mall.shopping.mall.service.project.ProjectService;
@@ -52,7 +53,7 @@ public class HomeController {
 
     @GetMapping("/payment")
     public ResponseEntity<String> showSubscriptionPage(Model model) {
-        List<Project> projects = projectService.getAllProjects(); // 예제 서비스 호출
+        List<ProjectResponseDto> projects = projectService.getAllProjects(); // 예제 서비스 호출
         model.addAttribute("projects", projects);
         return ResponseEntity.ok("ok"); // HTML 파일 이름
     }

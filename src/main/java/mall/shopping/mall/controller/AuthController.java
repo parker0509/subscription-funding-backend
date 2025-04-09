@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/auth")
@@ -16,17 +18,18 @@ public class AuthController {
     @Autowired
     private LoginService loginService;
 
-
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest){
-
-        try{
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
+        try {
             String token = loginService.loginUserService(loginRequest.getEmail(), loginRequest.getPassword());
-            return ResponseEntity.ok(token);
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
 
+            // ✅ JSON 형식으로 응답
+            System.out.println("token = " + token);
+
+            return ResponseEntity.ok(Map.of("token", token));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PostMapping("/register")

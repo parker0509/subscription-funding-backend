@@ -3,6 +3,7 @@ package mall.shopping.mall.service.login;
 
 import jakarta.servlet.http.HttpSession;
 import mall.shopping.mall.entity.User;
+import mall.shopping.mall.provider.JwtTokenProvider;
 import mall.shopping.mall.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,10 +16,13 @@ public class LoginService {
 
     private final BCryptPasswordEncoder passwordEncoder;
 
+    private final JwtTokenProvider jwtTokenProvider;
+
     @Autowired
-    public LoginService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public LoginService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder,JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     // !!로그인에 필요한 기능
@@ -43,7 +47,7 @@ public class LoginService {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
-        return "JWT_TOKEN";
+        return jwtTokenProvider.createToken(user.getEmail());
 
     }
 

@@ -34,9 +34,9 @@ public class Project {
 
     private BigDecimal raisedAmount = BigDecimal.ZERO; // 현재 모금된 금액
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "creator_id", nullable = false)
-    private User creator; // 프로젝트 생성자 (User 엔터티와 관계)
+    private User creator;
 
     private LocalDateTime startDate; // 시작 날짜
     private LocalDateTime endDate; // 종료 날짜

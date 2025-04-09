@@ -5,6 +5,9 @@ spring:
     password: qwer1234
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  jwt:
+    secret: ${JWT_SECRET}  # ✅ 직접 입력
+
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect  # 이 부분 추가!!
     hibernate:
