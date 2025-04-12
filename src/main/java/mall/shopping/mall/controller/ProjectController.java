@@ -22,15 +22,21 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
+
+
+    //JWT 검증 필요 AUTH () 분할 필요
     @GetMapping
     public List<ProjectResponseDto> getAllProjects() {
         return projectService.getAllProjects();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
+    public ResponseEntity<ProjectResponseDto> getProjectById(@PathVariable("id") Long id) {
         Optional<Project> project = projectService.getProjectById(id);
-        return project.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return project
+                .map(ProjectResponseDto::fromEntity)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
