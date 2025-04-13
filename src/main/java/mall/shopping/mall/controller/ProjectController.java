@@ -24,7 +24,7 @@ public class ProjectController {
 
 
 
-    //JWT 검증 필요 AUTH () 분할 필요
+    //JWT 검증 필요
     @GetMapping
     public List<ProjectResponseDto> getAllProjects() {
         return projectService.getAllProjects();

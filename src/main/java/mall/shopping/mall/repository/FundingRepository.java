@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FundingRepository extends JpaRepository<Funding, Long> {
+
+    boolean existsById(Long id);
     // 필요한 메서드들...
 }
 
