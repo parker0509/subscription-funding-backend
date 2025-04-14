@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import mall.shopping.mall.entity.User;
-
+import mall.shopping.mall.StringListConverter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -21,30 +21,40 @@ public class Project {
     private Long id;
 
     @NotBlank
-    private String name; // 프로젝트 이름
+    private String title;
 
     @NotBlank
-    private String description; // 프로젝트 설명
+    private String description;
 
-    private String ImageUrl;
+    private String imageUrl;
+
+    private int participants;
 
     @Column(nullable = false)
     @NotBlank
-    private BigDecimal goalAmount; // 목표 금액
+    private BigDecimal goalAmount;
 
-    private BigDecimal raisedAmount = BigDecimal.ZERO; // 현재 모금된 금액
+    private BigDecimal raisedAmount = BigDecimal.ZERO;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "creator_id", nullable = false)
-    private User creator;
+    private User creatorName;
 
-    private LocalDateTime startDate; // 시작 날짜
-    private LocalDateTime endDate; // 종료 날짜
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
 
     @Enumerated(EnumType.STRING)
-    private ProjectStatus status; // 프로젝트 상태 (진행 중, 완료 등)
+    private ProjectStatus status;
 
     public enum ProjectStatus {
         FUNDING, SUCCESS, FAILED
     }
+
+
+    @Convert(converter = StringListConverter.class)
+    @Column(columnDefinition = "TEXT")
+    private List<String> tags;
+
+
 }
+

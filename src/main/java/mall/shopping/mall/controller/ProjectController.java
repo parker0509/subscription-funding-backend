@@ -43,6 +43,7 @@ public class ProjectController {
     public ResponseEntity<Project> createProject(@RequestBody ProjectRequestDto dto,
                                                  @AuthenticationPrincipal CustomUserDetails userDetails) {
         Project savedProject = projectService.createProject(dto, userDetails.getUsername());
+        System.out.println("dto.getTags() = " + dto.getTags());
         return ResponseEntity.ok(savedProject);
     }
 

@@ -7,6 +7,7 @@ import lombok.Setter;
 import mall.shopping.mall.entity.User;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,5 +22,7 @@ public class ProjectRequestDto {
     private BigDecimal goalAmount;
 
     private String imageUrl; // 이미지 URL은 선택 사항
+
+    private List<String> tags;
 
 }

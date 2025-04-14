@@ -1,37 +1,53 @@
 package mall.shopping.mall.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import mall.shopping.mall.entity.Project;
 
 import java.math.BigDecimal;
+import java.util.List;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class ProjectResponseDto {
     private Long id;
-    private String name;
-    private String description;
-    private BigDecimal goalAmount;
-    private BigDecimal raisedAmount;
+    private String title;
+    private String description;         // ✅ 설명 필드 추가
     private String imageUrl;
-    private String creatorEmail;
+    private String creatorName;
+    private String fundingStatus;
+    private int goalAmount;             // ✅ 목표 금액
+    private int participants;           // ✅ 참여자 수
+    private List<String> tags;
 
-    // ✅ 이 static 메서드가 핵심!
     public static ProjectResponseDto fromEntity(Project project) {
-        ProjectResponseDto dto = new ProjectResponseDto();
-        dto.setId(project.getId());
-        dto.setName(project.getName());
-        dto.setDescription(project.getDescription());
-        dto.setGoalAmount(project.getGoalAmount());
-        dto.setRaisedAmount(project.getRaisedAmount());
-        dto.setImageUrl(project.getImageUrl());
 
-        // Lazy 로딩 조심! 이 라인에서 NullPointerException 날 수 있음.
-        if (project.getCreator() != null) {
-            dto.setCreatorEmail(project.getCreator().getEmail());
+        String fundingStatus = calculateFundingPercentage(project.getRaisedAmount(), project.getGoalAmount());
+
+        return ProjectResponseDto.builder()
+                .id(project.getId())
+                .title(project.getTitle())
+                .description(project.getDescription()) // ✅ 매핑 추가
+                .imageUrl(project.getImageUrl())
+                .creatorName(project.getCreatorName().getUsername())
+                .fundingStatus(fundingStatus)
+                .goalAmount(project.getGoalAmount().intValue()) // ✅ BigDecimal → int
+                .participants(project.getParticipants())        // ✅ 매핑 추가
+                .tags(project.getTags())
+                .build();
+    }
+
+    private static String calculateFundingPercentage(BigDecimal raised, BigDecimal goal) {
+        if (goal == null || goal.compareTo(BigDecimal.ZERO) == 0) {
+            return "0% 달성";
         }
-
-        return dto;
+        BigDecimal percentage = raised
+                .multiply(BigDecimal.valueOf(100))
+                .divide(goal, 0, BigDecimal.ROUND_HALF_UP);
+        return percentage.toPlainString() + "% 달성";
     }
 }

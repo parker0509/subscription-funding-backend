@@ -38,7 +38,7 @@ public class UserService {
         User newUser = new User();
 
         newUser.setEmail(registerRequest.getEmail());
-        newUser.setName(registerRequest.getName());
+        newUser.setUsername(registerRequest.getName());
         newUser.setPhone(registerRequest.getPhone());
         newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 
@@ -58,7 +58,7 @@ public class UserService {
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            user.setName(userDetails.getName());
+            user.setUsername(userDetails.getUsername());
             user.setEmail(userDetails.getEmail());
             user.setPhone(userDetails.getPhone());
             user.setPassword(passwordEncoder.encode(user.getPassword()));

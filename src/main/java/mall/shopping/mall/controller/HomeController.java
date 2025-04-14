@@ -36,7 +36,7 @@ public class HomeController {
         // 세션에 사용자 이름 저장
 
         if (user != null) {
-            String username = user.getName();
+            String username = user.getUsername();
             model.addAttribute("username", username);
         }
 
